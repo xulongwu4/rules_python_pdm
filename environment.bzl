@@ -35,7 +35,8 @@ pdm run python "$@"
 
 def _setup(repository_ctx):
     project_dir = repository_ctx.path(repository_ctx.attr.project).dirname
-    repository_ctx.symlink("//:__pypackages__", repository_ctx.path("../../__pypackages__"))
+
+    # repository_ctx.symlink("//:__pypackages__", repository_ctx.path("../../__pypackages__"))
     repository_ctx.symlink(repository_ctx.attr.project, repository_ctx.path("../../pyproject.toml"))
     repository_ctx.symlink(repository_ctx.attr.lock, repository_ctx.path("../../pdm.lock"))
     repository_ctx.symlink(repository_ctx.attr.config, repository_ctx.path("../../.pdm.toml"))
