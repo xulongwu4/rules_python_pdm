@@ -4,5 +4,6 @@ BAZEL_WORKSPACE=$1
 BAZEL_OUTPUT_BASE=$2
 
 for file in __pypackages__ pyproject.toml pdm.lock .pdm.toml; do
+    [ -w "$BAZEL_OUTPUT_BASE" ] || printf "Cannot write to"
     [ -e "$BAZEL_WORKSPACE"/"$file" ] && ln -sf "$BAZEL_WORKSPACE"/"$file" "$BAZEL_OUTPUT_BASE"/"$file"
 done

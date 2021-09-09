@@ -54,7 +54,7 @@ def _setup(repository_ctx):
     fail("WORKSPACE: {}, other: {}".format(str(project_dir), str(repository_ctx.path("../.."))))
     result = repository_ctx.execute([script, str(project_dir), str(repository_ctx.path("../.."))])
     if result.return_code:
-        fail("Failed to set up symlinks for pdm: {}".format(result.stderr))
+        fail("Failed to set up symlinks for pdm: {}, {}".format(result.stdout, result.stderr))
 
 def _symlink_packages(repository_ctx):
     project_dir = repository_ctx.path(repository_ctx.attr.project).dirname
