@@ -79,19 +79,19 @@ def _pdm_environment_impl(repository_ctx):
 pdm_environment = repository_rule(
     attrs = {
         "project": attr.label(
-            mandatory = True,
+            # mandatory = True,
             allow_single_file = True,
             doc = "The label of the pyproject.toml file.",
             default = "//:pyproject.toml",
         ),
         "lock": attr.label(
-            mandatory = True,
+            # mandatory = True,
             allow_single_file = True,
             doc = "The label of the pdm.lock file.",
             default = "//:pdm.lock",
         ),
         "config": attr.label(
-            mandatory = True,
+            # mandatory = True,
             allow_single_file = True,
             doc = "The label of the .pdm.toml config file.",
             default = "//:.pdm.toml",
