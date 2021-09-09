@@ -31,7 +31,7 @@ def _render_templates(repository_ctx):
 
     repository_ctx.template(
         "BUILD",
-        Label("@rules_python_poetry//:BUILD"),
+        Label("@rules_python_pdm//:BUILD"),
     )
 
 def _pdm_environment_impl(repository_ctx):
