@@ -4,6 +4,29 @@ Pdm Environment Repository
 Designed to manage the virtual environment using Pdm and export a further repository to interact with it.
 """
 
+BUILD_TMPL = """\
+load("@rules_python//python:defs.bzl", "py_runtime", "py_runtime_pair")
+
+py_runtime(
+    name = "pdm_runtime",
+    files = ["pdm-python-wrapper"],
+    interpreter = "pdm-python-wrapper",
+    python_version = "PY3"
+)
+
+py_runtime_pair(
+    name = "pdm_runtime_pair",
+    py3_runtime = ":pdm_runtime",
+    visibility = ["//visibility:public"],
+)
+
+toolchain(
+    name = "pdm_toolchain",
+    toolchain = ":pdm_runtime_pair",
+    toolchain_type = "@rules_python//python:toolchain_type",
+)
+"""
+
 def _setup(repository_ctx):
     pass
 
@@ -29,9 +52,9 @@ def _render_templates(repository_ctx):
     environment_path = str(repository_ctx.path(".venv").dirname)
     venv_path = str(repository_ctx.path(".venv"))
 
-    repository_ctx.template(
+    repository_ctx.file(
         "BUILD",
-        Label("@rules_python_pdm//:BUILD"),
+        BUILD_TMPL,
     )
 
 def _pdm_environment_impl(repository_ctx):
