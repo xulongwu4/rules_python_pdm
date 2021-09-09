@@ -36,8 +36,8 @@ pdm run python "$@"
 SETUP_SCRIPT = """\
 #!/usr/bin/env sh
 
-BAZEL_WORKSPACE=$(bazel info workspace 2>/dev/null)
-BAZEL_OUTPUT_BASE=$(bazel info output_base 2>/dev/null)
+BAZEL_WORKSPACE=$1
+BAZEL_OUTPUT_BASE=$2
 
 for file in __pypackages__ pyproject.toml pdm.lock .pdm.toml; do
     [ -e "$BAZEL_WORKSPACE"/"$file" ] && ln -sf "$BAZEL_WORKSPACE"/"$file" "$BAZEL_OUTPUT_BASE"/"$file"
