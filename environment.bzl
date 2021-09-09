@@ -52,7 +52,6 @@ def _setup(repository_ctx):
     )
     script = repository_ctx.path("setup-pdm")
     project_dir = repository_ctx.path(Label("@//:WORKSPACE")).dirname
-    print("PROJECT DIR:", str(project_dir))
     result = repository_ctx.execute([script, str(project_dir), str(repository_ctx.path("../.."))])
     if result.return_code:
         fail("Failed to set up symlinks for pdm: {}".format(result.stderr))
