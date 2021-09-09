@@ -36,7 +36,7 @@ pdm run python "$@"
 def _setup(repository_ctx):
     result = repository_ctx.execute(["./setup-pdm"])
     if result.return_code:
-        fail("Failed to set up symlinks for pdm.")
+        fail("Failed to set up symlinks for pdm: {}".format(result.stderr))
 
 def _symlink_packages(repository_ctx):
     project_dir = repository_ctx.path(repository_ctx.attr.project).dirname
