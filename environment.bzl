@@ -33,7 +33,23 @@ PDM_WRAPPER = """\
 pdm run python "$@"
 """
 
+SETUP_SCRIPT = """\
+#!/usr/bin/env sh
+
+BAZEL_WORKSPACE=$(bazel info workspace 2>/dev/null)
+BAZEL_OUTPUT_BASE=$(bazel info output_base 2>/dev/null)
+
+for file in __pypackages__ pyproject.toml pdm.lock .pdm.toml; do
+    [ -e "$BAZEL_WORKSPACE"/"$file" ] && ln -sf "$BAZEL_WORKSPACE"/"$file" "$BAZEL_OUTPUT_BASE"/
+"$file"
+done
+"""
+
 def _setup(repository_ctx):
+    repository_ctx.file(
+        "setup-pdm",
+        SETUP_SCRIPT,
+    )
     script = repository_ctx.path("setup-pdm")
     result = repository_ctx.execute([script])
     if result.return_code:
@@ -58,8 +74,8 @@ def _symlink_project_files(repository_ctx):
     )
 
 def _render_templates(repository_ctx):
-    environment_path = str(repository_ctx.path(".venv").dirname)
-    venv_path = str(repository_ctx.path(".venv"))
+    # environment_path = str(repository_ctx.path(".venv").dirname)
+    # venv_path = str(repository_ctx.path(".venv"))
 
     repository_ctx.file(
         "BUILD",
