@@ -27,6 +27,12 @@ toolchain(
 )
 """
 
+PDM_WRAPPER = """\
+#!/usr/bin/env sh
+
+pdm run python "$@"
+"""
+
 def _setup(repository_ctx):
     pass
 
@@ -55,6 +61,12 @@ def _render_templates(repository_ctx):
     repository_ctx.file(
         "BUILD",
         BUILD_TMPL,
+    )
+
+    repository_ctx.file(
+        "pdm-python-wrapper",
+        PDM_WRAPPER,
+        executable = True,
     )
 
 def _pdm_environment_impl(repository_ctx):
