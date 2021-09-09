@@ -48,37 +48,19 @@ def _setup(repository_ctx):
     repository_ctx.file(
         "setup-pdm",
         SETUP_SCRIPT,
+        executable = True,
     )
     script = repository_ctx.path("setup-pdm")
     project_dir = repository_ctx.path(repository_ctx.attr.project).dirname
-
-    # fail("WORKSPACE: {}, other: {}".format(str(project_dir), str(repository_ctx.path("../.."))))
     result = repository_ctx.execute([script, str(project_dir), str(repository_ctx.path("../.."))])
     if result.return_code:
-        fail("Failed to set up symlinks for pdm: {}, {}".format(result.stdout, result.stderr))
+        fail("Failed to set up symlinks for pdm: {}".format(result.stderr))
 
 def _symlink_packages(repository_ctx):
     project_dir = repository_ctx.path(repository_ctx.attr.project).dirname
     repository_ctx.symlink(repository_ctx.path(str(project_dir) + "/__pypackages__"), repository_ctx.path("__pypackages__"))
 
-def _symlink_project_files(repository_ctx):
-    repository_ctx.symlink(
-        repository_ctx.attr.project,
-        repository_ctx.path("pyproject.toml"),
-    )
-    repository_ctx.symlink(
-        repository_ctx.attr.lock,
-        repository_ctx.path("pdm.lock"),
-    )
-    repository_ctx.symlink(
-        repository_ctx.attr.config,
-        repository_ctx.path(".pdm.toml"),
-    )
-
-def _render_templates(repository_ctx):
-    # environment_path = str(repository_ctx.path(".venv").dirname)
-    # venv_path = str(repository_ctx.path(".venv"))
-
+def _render_files(repository_ctx):
     repository_ctx.file(
         "BUILD",
         BUILD_TMPL,
@@ -91,16 +73,8 @@ def _render_templates(repository_ctx):
     )
 
 def _pdm_environment_impl(repository_ctx):
-    # managed_root = repository_ctx.path(repository_ctx.attr.project).dirname
-    # repository_ctx.execute(
-    #     ["poetry", "install"],
-    #     working_directory = str(managed_root),
-    # )
-
-    # _symlink_packages(repository_ctx)
-    # _symlink_project_files(repository_ctx)
     _setup(repository_ctx)
-    _render_templates(repository_ctx)
+    _render_files(repository_ctx)
 
 pdm_environment = repository_rule(
     attrs = {
@@ -108,16 +82,19 @@ pdm_environment = repository_rule(
             mandatory = True,
             allow_single_file = True,
             doc = "The label of the pyproject.toml file.",
+            default = "//:pyproject.toml",
         ),
         "lock": attr.label(
             mandatory = True,
             allow_single_file = True,
             doc = "The label of the pdm.lock file.",
+            default = "//:pdm.lock",
         ),
         "config": attr.label(
             mandatory = True,
             allow_single_file = True,
             doc = "The label of the .pdm.toml config file.",
+            default = "//:.pdm.toml",
         ),
     },
     implementation = _pdm_environment_impl,
