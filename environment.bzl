@@ -33,13 +33,28 @@ PDM_WRAPPER = """\
 pdm run python "$@"
 """
 
-def _setup(repository_ctx):
-    project_dir = repository_ctx.path(repository_ctx.attr.project).dirname
+SETUP_SCRIPT = """\
+#!/usr/bin/env sh
 
-    # repository_ctx.symlink("//:__pypackages__", repository_ctx.path("../../__pypackages__"))
-    repository_ctx.symlink(repository_ctx.attr.project, repository_ctx.path("../../pyproject.toml"))
-    repository_ctx.symlink(repository_ctx.attr.lock, repository_ctx.path("../../pdm.lock"))
-    repository_ctx.symlink(repository_ctx.attr.config, repository_ctx.path("../../.pdm.toml"))
+BAZEL_WORKSPACE=$1
+BAZEL_OUTPUT_BASE=$2
+
+for file in __pypackages__ pyproject.toml pdm.lock .pdm.toml; do
+    [ -e "$BAZEL_WORKSPACE"/"$file" ] && ln -sf "$BAZEL_WORKSPACE"/"$file" "$BAZEL_OUTPUT_BASE"/"$file"
+done
+"""
+
+def _setup(repository_ctx):
+    repository_ctx.file(
+        "setup-pdm",
+        SETUP_SCRIPT,
+        executable = True,
+    )
+    script = repository_ctx.path("setup-pdm")
+    project_dir = repository_ctx.path("@//:WORKSPACE").dirname
+    result = repository_ctx.execute([script, str(project_dir), str(repository_ctx.path("../.."))])
+    if result.return_code:
+        fail("Failed to set up symlinks for pdm: {}".format(result.stderr))
 
 def _render_files(repository_ctx):
     repository_ctx.file(
@@ -58,22 +73,5 @@ def _pdm_environment_impl(repository_ctx):
     _render_files(repository_ctx)
 
 pdm_environment = repository_rule(
-    attrs = {
-        "project": attr.label(
-            allow_single_file = True,
-            doc = "The label of the pyproject.toml file.",
-            default = "@//:pyproject.toml",
-        ),
-        "lock": attr.label(
-            allow_single_file = True,
-            doc = "The label of the pdm.lock file.",
-            default = "@//:pdm.lock",
-        ),
-        "config": attr.label(
-            allow_single_file = True,
-            doc = "The label of the .pdm.toml config file.",
-            default = "@//:.pdm.toml",
-        ),
-    },
     implementation = _pdm_environment_impl,
 )
