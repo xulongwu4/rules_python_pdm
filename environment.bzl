@@ -39,7 +39,7 @@ SETUP_SCRIPT = """\
 BAZEL_WORKSPACE=$1
 BAZEL_OUTPUT_BASE=$2
 
-for file in __pypackages__ pyproject.toml pdm.lock .pdm.toml; do
+for file in __pypackages__ pyproject.toml pdm.lock .pdm.toml .python-version; do
     [ -e "$BAZEL_WORKSPACE"/"$file" ] && ln -sf "$BAZEL_WORKSPACE"/"$file" "$BAZEL_OUTPUT_BASE"/"$file"
 done
 """
@@ -70,7 +70,7 @@ def _render_files(repository_ctx):
 
 def _pdm_environment_impl(repository_ctx):
     _setup(repository_ctx)
-    _render_files(repository_ctx)
+    # _render_files(repository_ctx)
 
 pdm_environment = repository_rule(
     implementation = _pdm_environment_impl,
