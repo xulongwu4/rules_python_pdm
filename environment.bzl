@@ -68,6 +68,11 @@ def _render_files(repository_ctx):
     #     executable = True,
     # )
     repository_ctx.file(
+        "BUILD",
+        "",
+    )
+
+    repository_ctx.file(
         "pdm.bzl",
         """\
         def dummy():
