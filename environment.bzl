@@ -75,8 +75,8 @@ def _render_files(repository_ctx):
     repository_ctx.file(
         "pdm.bzl",
         """\
-        def dummy():
-            return
+def dummy():
+    return
         """,
     )
 
