@@ -44,7 +44,7 @@ for file in __pypackages__ pyproject.toml pdm.lock .pdm.toml .python-version; do
 done
 """
 
-def _setup(repository_ctx):
+def setup(repository_ctx):
     repository_ctx.file(
         "setup-pdm",
         SETUP_SCRIPT,
@@ -69,7 +69,7 @@ def _render_files(repository_ctx):
     )
 
 def _pdm_environment_impl(repository_ctx):
-    _setup(repository_ctx)
+    setup(repository_ctx)
     _render_files(repository_ctx)
 
 pdm_environment = repository_rule(
